@@ -45,8 +45,11 @@ try:
 			video = '/home/pi/Videos/handwashingvideotimer.mp4'
 		# VLC player on motion
 
-			media = vlc.MediaPlayer(video)
-			media.play()
+			media_player = vlc.MediaPlayer()
+            		media = vlc.Media(video)
+			media_player.set_media(media)
+            		media_player.toggle_fullscreen()
+         		media_player.play()
 			# Record new previous state
 			previousstate = 1
 			#Wait 120 seconds before looping again
