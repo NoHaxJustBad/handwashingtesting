@@ -16,7 +16,8 @@ try:
         if GPIO.input(PIR_PIN):
             print("Motion Detected")
             x+=1
-            if x=30:
+            y=0
+            if x==30:
                 media_player = vlc.MediaPlayer()
                 media = vlc.Media(video)
 			    media_player.set_media(media)
@@ -26,12 +27,14 @@ try:
 			    previousstate = 1
 			    #Wait 120 seconds before looping again
 		    	print("Waiting 30 seconds")
-		    	time.sleep(32)
-                 media_player.stop()
+                media_player.stop()
 
         else:
             print("no motion detected")
             x=0
+            y+=1
+            if y=50:
+                media_player.stop()
         time.sleep(0.1)
 
 except KeyboardInterrupt:
