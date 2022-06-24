@@ -1,72 +1,39 @@
-# Imports
 import RPi.GPIO as GPIO
 import time
 import requests
 import vlc
 import random
-
-# Set the GPIO naming convention
 GPIO.setmode(GPIO.BCM)
+PIR_PIN = 17
 
-# Turn off GPIO warnings
-GPIO.setwarnings(False)
-
-# Set a variable to hold the GPIO Pin identity
-pinpir = 17
-
-# Set GPIO pin as input
-GPIO.setup(pinpir, GPIO.IN)
-
-# Variables to hold the current and last states
-currentstate = 0
-previousstate = 0
+GPIO.setup(PIR_PIN, GPIO.IN)
+video = '/home/pi/Videos/handwashingvideotimer.mp4'
+print("Setup complete...")
+print("Starting script")
 
 try:
-	print("Waiting for PIR to settle ...")
+    while True:
+        if GPIO.input(PIR_PIN):
+            print("Motion Detected")
+            x+=1
+            if x=30:
+                media_player = vlc.MediaPlayer()
+                media = vlc.Media(video)
+			    media_player.set_media(media)
+                media_player.toggle_fullscreen()
+                media_player.play()
+			    # Record new previous state
+			    previousstate = 1
+			    #Wait 120 seconds before looping again
+		    	print("Waiting 30 seconds")
+		    	time.sleep(32)
+                 media_player.stop()
 
-	# Loop until PIR output is 0
-	while GPIO.input(pinpir) == 1:
-
-		currentstate = 0
-
-	print("    Ready")
-
-	# Loop until users quits with CTRL-C
-	while True:
-
-		# Read PIR state
-		currentstate = GPIO.input(pinpir)
-
-		# If the PIR is triggered
-		if currentstate == 1 and previousstate == 0:
-
-			print("Motion detected!")
-		#Generate a Random Integer
-			video = '/home/pi/Videos/handwashingvideotimer.mp4'
-		# VLC player on motion
-
-			media_player = vlc.MediaPlayer()
-            		media = vlc.Media(video)
-			media_player.set_media(media)
-            		media_player.toggle_fullscreen()
-         		media_player.play()
-			# Record new previous state
-			previousstate = 1
-			#Wait 120 seconds before looping again
-			print("Waiting 30 seconds")
-			time.sleep(30)
-
-		# If the PIR has returned to ready state
-		elif currentstate == 0 and previousstate == 1:
-
-			print("Ready")
-			previousstate = 0
-
-		# Wait for 10 milliseconds
-		time.sleep(0.01)
+        else:
+            print("no motion detected")
+            x=0
+        time.sleep(0.1)
 
 except KeyboardInterrupt:
-	print("    Quit")
-
-	# Reset GPIO settings
-	GPIO.cleanup()
+    print("Quitting")
+    GPIO.cleanup()
